@@ -61,3 +61,69 @@ if (faviconWrapper) {
 faviconWrapper.innerHTML = `<img src="${activeTab.favIconUrl}" alt="favicon" onerror="this.remove()">`;
     }
 }
+
+const sslBadge = document.getElementById("sslBadge");
+if (sslBadge && parsedUrl.protocol !== "https:") {
+ sslBadge.textContent = "Not Secure";
+ sslBadge.classList.add("insecure");
+}
+} catch {
+ document.getElementById("siteHost").textContent = url;
+ document.getElementById("siteURL").textContent = url;
+}
+
+
+settingList.forEach(setting => {
+ chrome.contextSettings[setting].get({ primaryUrl: url }, details => {
+ const checkbox = document.getElementById(setting);
+ if (checkbox) {
+  checkbox.checked = details?.setting === "allow" || details?.setting === "session_only";
+ }
+ });
+});
+
+setupHandlers(activeTab.id);
+});
+});
+
+function setupHandlers(tabId) {
+
+settingList.forEach(setting => {
+ const checkbox = document.getElementById(setting);
+ if (!checkbox) return;
+
+checkbox.onchange = () => {
+ if (typeof chrome === "undefined" || !chrome.contentSettings || !activeTabOrigin) return;
+
+chrome.contentSettings[setting].set(
+ {
+ primaryPattern: activeTabOrigin,
+ setting: checkbox.checked ? "allow" : "block"
+ },
+ () => {
+ if (tabId) {
+    chrome.tabs.reload(tabId);
+ } else {
+    chrome.tabs.reload();
+ }
+ }
+);
+};
+});
+
+
+document.getElementById("btnReload")?.addEventListener("click", () => {
+ if (tabId) {
+ chrome.tabs.reload(tabId);
+ } else if (typeof chrome !== "undefined" && chrome.tabs?.reload) {
+ chrome.tabs.reload();
+ }
+});
+
+
+document.getElementById("btnClearSiteData")?.addEventListener("click", () => {
+ if(!confirm("Clear cookies and cached storage for this site?")) return;
+
+if (typeof chrome !== "undefined" && chrome.browsingData && activeTabOrigin) {
+ const originClean = activeTabOrigin.replace("/*", "");
+ 
