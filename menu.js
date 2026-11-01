@@ -126,4 +126,25 @@ document.getElementById("btnClearSiteData")?.addEventListener("click", () => {
 
 if (typeof chrome !== "undefined" && chrome.browsingData && activeTabOrigin) {
  const originClean = activeTabOrigin.replace("/*", "");
- 
+ chrome.browsingData.remove(
+ { origins: [originClean] },
+ {
+   cache: true,
+   cookies: true,
+   fileSystem: true,
+   indexedDB: true,
+   localStorage: true,
+   serviceWorkers: true,
+   webSQL: true
+ },
+ () => {
+   if (tabId) {
+   chrome.tabs.reload(tabId):
+   } else if (chrome.tabs?.reload) {
+      chrome.tabs.reload();
+   }
+ }
+);
+}
+});
+}
