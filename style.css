@@ -30,7 +30,7 @@ box-sizing: border-box;
 body {
 width: 350px;
 background-color: var(--bg-crypt);
-background-image: url("image/bg-web.jpg");
+background-image: url("images/bg-web.jpg");
 background-size: cover;
 background-position: center;
 background-repeat: no-repeat;
@@ -170,7 +170,7 @@ color: var(--pumpkin);
 border-color: rgba(255, 107, 26, 0.4);
 }
 
-.header-actionactive {
+.header-action:active {
 transform: scale(0.96);
 }
 

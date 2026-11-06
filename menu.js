@@ -12,10 +12,10 @@ const settingList = [
 let activeTabOrigin = "";
 
 document.addEventListener("DOMContentLoaded", () => {
-if (typeof chrome === "undefined" || !chrome.tab?.query) {
+if (typeof chrome === "undefined" || !chrome.tabs?.query) {
 
 activeTabOrigin = "https://example.com/*";
-document.getElementById("siteHost").textContent = "example.com";
+document.getElementById("site-host").textContent = "example.com";
 document.getElementById("siteURL").textContent = activeTabOrigin;
 settingList.forEach(setting => {
 const el = document.getElementById(setting);
@@ -28,7 +28,7 @@ return;
 chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
 const activeTab = tabs?.[0];
 if (!activeTab?.url) {
-document.getElementById("siteHost").textContent = "No active tab";
+document.getElementById("site-host").textContent = "No active tab";
 document.getElementById("siteURL").textContent = "";
 return;
 }
@@ -38,7 +38,7 @@ const { url } = activeTab;
 
 if (/^(chrome|edge|chrome-extension|about|view-source):/.test(url)) {
 document.getElementById("systemNotice").style.display = "block";
-document.getElementById("siteHost").textContent = "System Page";
+document.getElementById("site-host").textContent = "System Page";
 document.getElementById("siteURL").textContent = url;
 document.getElementById("sslBadge")?.remove();
 settingList.forEach(setting => {
@@ -52,7 +52,7 @@ try {
 const parsedUrl = new URL(url);
 activeTabOrigin = `${parsedUrl.origin}/*`;
 
-document.getElementById("siteHost").textContent = parsedUrl.hostname || parsedUrl.origin;
+document.getElementById("site-host").textContent = parsedUrl.hostname || parsedUrl.origin;
 document.getElementById("siteURL").textContent = activeTabOrigin;
 
 if(activeTab.favIconUrl) {
@@ -68,13 +68,13 @@ if (sslBadge && parsedUrl.protocol !== "https:") {
  sslBadge.classList.add("insecure");
 }
 } catch {
- document.getElementById("siteHost").textContent = url;
+ document.getElementById("site-host").textContent = url;
  document.getElementById("siteURL").textContent = url;
 }
 
 
 settingList.forEach(setting => {
- chrome.contextSettings[setting].get({ primaryUrl: url }, details => {
+ chrome.contentSettings[setting].get({ primaryUrl: url }, details => {
  const checkbox = document.getElementById(setting);
  if (checkbox) {
   checkbox.checked = details?.setting === "allow" || details?.setting === "session_only";
@@ -139,7 +139,7 @@ if (typeof chrome !== "undefined" && chrome.browsingData && activeTabOrigin) {
  },
  () => {
    if (tabId) {
-   chrome.tabs.reload(tabId):
+   chrome.tabs.reload(tabId);
    } else if (chrome.tabs?.reload) {
       chrome.tabs.reload();
    }
